@@ -78,33 +78,35 @@ function odoosync_civicrm_alterAPIPermissions($entity, $action, &$params, &$perm
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
 function odoosync_civicrm_navigationMenu( &$params ) {
+  foreach ($params as &$menu) {
+    if (array_key_exists('attributes', $menu) && $menu['attributes']['name'] == 'Administer') {
+      $maxKey = (max(array_keys($menu['child'])));
 
-  $maxKey = _postcodenl_getMenuKeyMax($params);
-  $parent =_postcodenl_get_parent_id_navigation_menu($params, 'Administer');
-
-  $key = $maxKey + 2;
-  $child[$key]['attributes'] = array (
-      "name"=> 'odoo_contribution_settings',
-      "label"=> ts('Contribution settings'),
-      "url"=> "civicrm/admin/odoo/contribution",
-      "permission" => "administer CiviCRM",
-      'active' => 1,
-      'parentID' => $maxKey+1,
-  );
-  $child[$key]['child'] = array();
+      $key = $maxKey + 2;
+      $child[$key]['attributes'] = array (
+        "name"=> 'odoo_contribution_settings',
+        "label"=> ts('Contribution settings'),
+        "url"=> "civicrm/admin/odoo/contribution",
+        "permission" => "administer CiviCRM",
+        'active' => 1,
+        'parentID' => $maxKey+1,
+      );
+      $child[$key]['child'] = array();
 
 
-  $parent['child'][$maxKey+1] = array(
-    'attributes' => array(
-      "name" => 'odoo_admin',
-      "label" => ts("Odoo (OpenERP)"),
-      "permission" => "administer CiviCRM",
-      "active" => 1,
-      "parentID" => $parent['attributes']['navID'],
-      "navID" => $maxKey+1,
-    ),
-    'child' => $child,
-  );
+      $menu['child'][$maxKey+1] = array(
+        'attributes' => array(
+          "name" => 'odoo_admin',
+          "label" => ts("Odoo (OpenERP)"),
+          "permission" => "administer CiviCRM",
+          "active" => 1,
+          "parentID" => $parent['attributes']['navID'],
+          "navID" => $maxKey+1,
+        ),
+        'child' => $child,
+      );
+    }
+  }
 }
 
 function _odoosync_get_parent_id_navigation_menu(&$menu, $path, &$parent = NULL) {
